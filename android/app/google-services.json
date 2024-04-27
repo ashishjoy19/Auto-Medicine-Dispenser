@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "674971988389",
+    "project_id": "automeddispenser",
+    "storage_bucket": "automeddispenser.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:674971988389:android:2617ce72ce30dea0e4384c",
+        "android_client_info": {
+          "package_name": "com.example.doctor_portal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYe24yMadjFKXnWRsl-mliuSmGHV7E1xA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
