@@ -30,13 +30,15 @@ class _HomeScreenState extends State
     try {
       // Retrieve user document from Firestore using user's UID
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      // Extract user's designation from the document
+      String designation = userDoc.get('doctorDesignation');
       // Extract user's first name from the document
       String firstName = userDoc.get('firstName');
       // Extract user's last name from the document
       String lastName = userDoc.get('lastName');
       // Combine first name and last name to create display name
       setState(() {
-        _displayName = '$firstName $lastName';
+        _displayName = '$designation $firstName $lastName';
       });
     } catch (e) {
       print('Error fetching user data: $e');
