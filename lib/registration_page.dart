@@ -12,8 +12,12 @@ class _RegisterScreenState extends State
   late String _email;
   late String _password;
   late String _firstName;
+  late String _middleName;
   late String _lastName;
   late String _medicalLicenseNumber;
+  late String _doctorDesignation;
+  late String _doctorContactInfo;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -23,16 +27,23 @@ class _RegisterScreenState extends State
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
           email: _email,
           password: _password,
         );
 
         // Store additional user information in Firestore
-        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
           'firstName': _firstName,
+          'middleName': _middleName,
           'lastName': _lastName,
           'medicalLicenseNumber': _medicalLicenseNumber,
+          'doctorDesignation': _doctorDesignation,
+          'doctorContactInfo': _doctorContactInfo,
           // Add more fields as needed
         });
 
@@ -57,164 +68,218 @@ class _RegisterScreenState extends State
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
-          Image.asset(
-            'assets/background_image.png', // Replace 'background_image.jpg' with your actual image file
-            fit: BoxFit.fill,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          Center(
-            child: Container(
-              width: 400,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white.withOpacity(0.7), // Adjust opacity as needed
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+        // Background Image
+        Image.asset(
+        'assets/background_image.png', // Replace 'background_image.jpg' with your actual image file
+        fit: BoxFit.fill,
+        width: double.infinity,
+        height: double.infinity,
+      ),
+      Center(
+        child: Container(
+          width: 600, // Adjusted width
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white.withOpacity(0.7),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3),
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Create an Account',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Create an Account',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
                         children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'First Name',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your first name';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _firstName = value!;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Last Name',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your last name';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _lastName = value!;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Medical License Number',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your medical license number';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _medicalLicenseNumber = value!;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _email = value!;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
-                            ),
-                            obscureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _password = value!;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: _registerWithEmailAndPassword,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Designation',
+                                border: OutlineInputBorder(),
                               ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Text(
-                                'Register',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your designation';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _doctorDesignation = value!;
+                              },
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            _registrationMessage,
-                            style: TextStyle(
-                              color: Colors.green,
+                          SizedBox(width: 22),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'First Name',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your first name';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _firstName = value!;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 22),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Middle Name',
+                                border: OutlineInputBorder(),
+                              ),
+                              onSaved: (value) {
+                                _middleName = value!;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 22),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Last Name',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your last name';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _lastName = value!;
+                              },
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Contact Number',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your contact number';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _doctorContactInfo = value!;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Medical License Number',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your medical license number';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _medicalLicenseNumber = value!;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _password = value!;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _registerWithEmailAndPassword,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Text(
+                            'Register',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        _registrationMessage,
+                        style: TextStyle(
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
+        ],
+    ),
     );
   }
 }
